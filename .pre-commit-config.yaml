@@ -6,3 +6,9 @@ repos:
         language: system
         entry: black
         types: [ python ]
+      - id: sync_binder_requirements
+        name: sync_doc_requirements
+        entry: poetry export --dev --without-hashes -o binder/requirements.txt -f requirements.txt
+        language: python
+        pass_filenames: false
+        files: 'poetry.lock'
