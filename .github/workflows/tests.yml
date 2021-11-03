@@ -1,0 +1,54 @@
+name: Tests
+
+on:
+  push:
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    if: ${{ !contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]') }}
+    strategy:
+      matrix:
+        python-version: [ 3.9 ]
+        os: [ ubuntu-latest ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+        shell: bash
+
+      - name: Poetry path
+        run: echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+        shell: bash
+
+      - uses: actions/cache@v2
+        if: ${{ startsWith(runner.os, 'Linux') }}
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-Py${{ matrix.python-version }}-pypoetry-${{ hashFiles('**/poetry.lock') }}
+
+      - uses: actions/cache@v2
+        if: ${{ startsWith(runner.os, 'macOS') }}
+        with:
+          path: ~/Library/Caches/pypoetry
+          key: ${{ runner.os }}-Py${{ matrix.python-version }}-pypoetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Activate environment and install dependencies
+        run: poetry install
+        shell: bash
+
+      - name: Check with Black
+        run: |
+          # Fails if Black format is not respected
+          poetry run black --check .
+        shell: bash
+
+      - name: Tests
+        run: poetry run pytest --nbval-lax -p no:python
+        shell: bash
