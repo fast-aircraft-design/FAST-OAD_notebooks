@@ -3,10 +3,14 @@ name = "fast-oad.notebooks"
 version = "0.1.0"
 description = ""
 authors =  [
-    "Scott DELBECQ <Scott.DELBECQ@isae-supaero.fr>"
-    "Martin DELAVENNE <Martin.DELAVENNE@isae-supaero.fr>"
+    "Scott DELBECQ <Scott.DELBECQ@isae-supaero.fr>",
+    "Martin DELAVENNE <Martin.DELAVENNE@isae-supaero.fr>",
     "Christophe DAVID <christophe.david@onera.fr>",
 ]
+packages = [
+    { include = "fastoad_notebooks" },
+]
+
 [tool.poetry.dependencies]
 python = "^3.7"
 fast-oad = "^1.1.0"
